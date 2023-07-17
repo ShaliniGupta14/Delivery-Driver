@@ -1,0 +1,1680 @@
+Even Parity Odd Parity:
+#include <iostream>
+using namespace std;
+int main()
+{
+int n;
+cout << "Enter the number of bits:";
+cin >> n;
+cout << endl;
+int arr[n];
+for (int i = 0; i < n; i++)
+{
+cin >> arr[i];
+}
+int res = 0;
+for (int i = 0; i < n; i++)
+{
+if (arr[i] == 1)
+{
+res = res ^ arr[i];
+} }
+if (res == 0)
+{
+cout << "Even parity"
+<< " ";
+int arre[n + 1];
+for (int i = 0; i < n; i++)
+{
+arre[i] = arr[i];
+}
+arre[n] = 0;
+for (int i = 0; i < n + 1; i++)
+{
+cout << arre[i];
+}
+cout << endl;
+cout << "Odd parity"
+<< " ";
+int arre1[n + 1];
+for (int i = 0; i < n; i++)
+{
+arre1[i] = arr[i];
+}
+arre1[n] = 1;
+for (int i = 0; i < n + 1; i++)
+{
+cout << arre1[i];
+} }
+else
+{
+cout << "Odd parity"
+<< " ";
+int arro[n + 1];
+for (int i = 0; i < n; i++)
+{
+arro[i] = arr[i];
+}
+arro[n] = 0;
+for (int i = 0; i < n + 1; i++)
+{
+cout << arro[i];
+}
+cout << endl;
+cout << "Even parity"
+<< " ";
+int arro1[n + 1];
+for (int i = 0; i < n; i++)
+{
+arro1[i] = arr[i];
+}
+arro1[n] = 1;
+for (int i = 0; i < n + 1; i++)
+{
+cout << arro1[i];
+} 
+} 
+}
+----------------------------------------------
+checksum
+
+#include <bits/stdc++.h>
+using namespace std;
+string Ones_complement(string data)
+{
+for (int i = 0; i < data.length(); i++)
+{
+if (data[i] == '0')
+data[i] = '1';
+else
+data[i] = '0';
+}
+return data;
+}
+string checkSum(string data, int block_size)
+{
+int n = data.length();
+if (n % block_size != 0)
+{
+int pad_size = block_size - (n % block_size);
+for (int i = 0; i < pad_size; i++)
+{
+data = '0' + data;
+} }
+string result = "";
+for (int i = 0; i < block_size; i++)
+{
+result += data[i];
+}
+for (int i = block_size; i < n; i += block_size)
+{
+string next_block = "";
+for (int j = i; j < i + block_size; j++)
+{
+next_block += data[j];
+}
+string additions = "";
+int sum = 0, carry = 0;
+for (int k = block_size - 1; k >= 0; k--)
+{
+sum += (next_block[k] - '0') + (result[k] - '0');
+carry = sum / 2;
+if (sum == 0)
+{
+additions = '0' + additions;
+sum = carry;
+}
+else if (sum == 1)
+{
+additions = '1' + additions;
+sum = carry;
+}
+else if (sum == 2)
+{
+additions = '0' + additions;
+sum = carry;
+}
+else
+{
+additions = '1' + additions;
+sum = carry;
+} }
+string final = "";
+if (carry == 1)
+{
+for (int l = additions.length() - 1; l >= 0;
+l--)
+{
+if (carry == 0)
+{
+final = additions[l] + final;
+}
+else if (((additions[l] - '0') + carry) % 2 == 0)
+{
+final = "0" + final;
+carry = 1;
+}
+else
+{
+final = "1" + final;
+carry = 0;
+} }
+result = final;
+}
+else
+{
+result = additions;
+} }
+return Ones_complement(result);
+}
+bool checker(string sent_message,
+string rec_message,
+int block_size)
+{
+string sender_checksum = checkSum(sent_message, block_size);
+string receiver_checksum = checkSum(
+rec_message + sender_checksum, block_size);
+if (count(receiver_checksum.begin(),
+receiver_checksum.end(), '0') == block_size)
+{
+return true;
+}
+else
+{
+return false;
+} }
+int main()
+{
+string sent_message = "10000101011000111001010011101101";
+string recv_message = "10000101011000111001010011101101";
+int block_size = 8;
+cout << "Message Sent:\n"
+<< sent_message;
+cout << "\nReceived Message:\n"
+<< recv_message;
+if (checker(sent_message,
+recv_message,
+block_size))
+{
+cout << "\nNo Error";
+}
+else
+{
+cout << "\nError";
+}
+return 0;
+}
+---------------------------------------------------------------
+two dimensional data stream
+even parity:
+
+#include <iostream>
+using namespace std;
+// Function to calculate parity bit for a row
+int row_parity(int row[], int size)
+{
+int parity = 0;
+for (int i = 0; i < size; i++)
+{
+parity ^= row[i];
+}
+return parity;
+}
+// Function to calculate parity bit for a column
+int col_parity(int matrix[][3], int col, int size)
+{
+int parity = 0;
+for (int i = 0; i < size; i++)
+{
+parity ^= matrix[i][col];
+}
+return parity;
+}
+int main()
+{
+int data[3][3], parity_row[3], parity_col[3];
+// Input data matrix
+cout << "Enter data:" << endl;
+for (int i = 0; i < 3; i++)
+{
+for (int j = 0; j < 3; j++)
+{
+cin >> data[i][j];
+} }
+// Calculate row parity bits
+for (int i = 0; i < 3; i++)
+{
+parity_row[i] = row_parity(data[i], 3);
+}
+// Calculate column parity bits
+for (int j = 0; j < 3; j++)
+{
+parity_col[j] = col_parity(data, j, 3);
+}
+// Print original data matrix and parity bits
+cout << "Data Matrix:" << endl;
+for (int i = 0; i < 3; i++)
+{
+for (int j = 0; j < 3; j++)
+{
+cout << data[i][j] << " ";
+}
+cout << parity_row[i] << endl;
+}
+for (int j = 0; j < 3; j++)
+{
+cout << parity_col[j] << " ";
+}
+cout << "0" << endl;
+cout << "Even Parity:" << endl;
+for (int i = 0; i < 3; i++)
+{
+for (int j = 0; j < 3; j++)
+{
+cout << data[i][j];
+}
+cout << parity_row[i] << " ";
+}
+for (int j = 0; j < 3; j++)
+{
+cout << parity_col[j];
+}
+cout << "0";
+return 0;
+}
+
+Odd parity:
+#include <iostream>
+using namespace std;
+// Function to calculate parity bit for a row
+int row_parity(int row[], int size)
+{
+int parity = 1;
+for (int i = 0; i < size; i++)
+{
+parity ^= row[i];
+}
+return parity;
+}
+// Function to calculate parity bit for a column
+int col_parity(int matrix[][3], int col, int size)
+{
+int parity = 1;
+for (int i = 0; i < size; i++)
+{
+parity ^= matrix[i][col];
+}
+return parity;
+}
+int main()
+{
+int data[3][3], parity_row[3], parity_col[3];
+// Input data matrix
+cout << "Enter values for the 3x3 data matrix:" << endl;
+for (int i = 0; i < 3; i++)
+{
+for (int j = 0; j < 3; j++)
+{
+cin >> data[i][j];
+} }
+// Calculate row parity bits
+for (int i = 0; i < 3; i++)
+{
+parity_row[i] = row_parity(data[i], 3);
+}
+// Calculate column parity bits
+for (int j = 0; j < 3; j++)
+{
+parity_col[j] = col_parity(data, j, 3);
+}
+// Print original data matrix and parity bits
+cout << "Data Matrix:" << endl;
+for (int i = 0; i < 3; i++)
+{
+for (int j = 0; j < 3; j++)
+{
+cout << data[i][j] << " ";
+}
+cout << parity_row[i] << endl;
+}
+for (int j = 0; j < 3; j++)
+{
+cout << parity_col[j] << " ";
+}
+cout << "0" << endl;
+cout << "Odd Parity:" << endl;
+for (int i = 0; i < 3; i++)
+{
+for (int j = 0; j < 3; j++)
+{
+cout << data[i][j];
+}
+cout << parity_row[i] << " ";
+}
+for (int j = 0; j < 3; j++)
+{
+cout << parity_col[j];
+}
+cout << "0";
+return 0;
+}
+---------------------------------------------------
+hamming code:
+#include<iostream>
+#include<math.h>
+using namespace std;
+void display(int arr[],int n)
+{
+for(int i=0;i<n;i++)
+cout<<arr[i];
+}
+int calculateParity(int arr[],int n,int m)
+{
+int i,sum,c;
+for(i=m-1,c=0,sum=0;i<n;i++)
+{
+if(i==m-1) {sum=0;c++;}
+else {sum+=arr[i];c++;}
+if(c==m){c=0;i+=m;}
+}
+if(sum%2==0)return 0;
+else return 1;
+}
+int checkParity(int arr[],int n,int m)
+{
+int i,sum,c;
+for(i=m-1,c=0,sum=0;i<n;i++)
+{
+sum+=arr[i];
+c++;
+if(c==m){c=0;i+=m;}
+}
+if(sum%2==0)return 0;
+else return 1;
+}
+int main()
+{
+int input[1000],bits[2000],sum,flag,n,m,k,i,j,parity[10];
+do
+{
+cout<<"Enter Number of Bits: ";
+cin>>n;
+cout<<endl<<"Enter Bits to Transfer: ";
+for(i=0;i<n;i++)
+cin>>input[i];
+for(i=0,m=0;i<n;i++)
+{
+if((int)pow(2,i)<=n)m++;
+else break;
+}m--;
+cout<<endl<<"You Entered: ";
+display(input,n);
+//INPUT
+for(i=0,k=0;i<n;i++)
+//KEEP PARITY BITS UNASSIGNED
+{
+for(j=0,flag=0;j<=m;j++)
+if(i+1==pow(2,j)){flag=1;bits[i]=7;n++;break;}
+if(flag==0){bits[i]=input[k];k++;}
+}
+for(i=0;i<=m;i++)
+//CALCULATE PARITY
+{
+bits[(int)pow(2,i)-1]=parity[i]=calculateParity(bits,n,(int)pow(2,i));
+cout<<endl<<"P"<<i<<": "<<parity[i];
+}
+cout<<endl<<"Hamming Code Generated: ";
+display(bits,n);
+cout<<endl<<"Enter Error Bit: ";
+cin>>k;
+bits[k-1]=1-bits[k-1];
+//CREATE ERROR AT SPECIFIED BIT
+cout<<endl<<"Transmitted Data: ";
+display(bits,n);
+for(sum=0,i=0;i<=m;i++)
+//CHECK PARITY BITS AT RECEIVER
+{
+parity[i]=checkParity(bits,n,(int)pow(2,i));
+cout<<endl<<"P"<<i<<": "<<parity[i];
+if(parity[i])sum+=(int)pow(2,i);
+}
+cout<<endl<<endl<<"Error Found at Bit Position "<<sum;
+bits[sum-1]=1-bits[sum-1];
+//CORRECT ERROR BIT
+cout<<endl<<endl<<"Corrected Data: ";
+display(bits,n);
+cout<<endl<<endl<<"Actual Message: ";
+for(i=0,j=0;i<n;i++)
+//EXTRACT ACTUAL BITS EXCLUDING
+PARITY BITS
+if((i!=(((int)pow(2,j))-1)) || (j>m))cout<<bits[i];
+else j++;
+cout<<endl<<"Continue? 1: Yes 0: No"<<endl<<"Enter Choice: ";
+cin>>i;
+}while(i);
+return 0;
+}
+------------------------------------------------
+Goback N arq sliding window:
+#include <iostream>
+using namespace std;
+int main()
+{
+int w, i, f, frames[50];
+cout << "Enter window size: ";
+cin >> w;
+cout << "\nEnter number of frames to transmit: ";
+cin >> f;
+cout << "\nEnter " << f << " frames: ";
+for (i = 1; i <= f; i++)
+cin >> frames[i];
+cout << "\nWith sliding window protocol the frames will be sent in the following
+manner (assuming no corruption of frames)\n\n";
+cout << "After sending " << w << " frames at each stage sender waits for
+acknowledgement sent by the receiver\n\n";
+for (i = 1; i <= f; i++)
+{
+if (i % w == 0)
+{
+cout << frames[i] << "\n";
+cout << "Acknowledgement of above frames sent is received by sender\n\n";
+}
+else
+cout << frames[i] << " ";
+}
+if (f % w != 0)
+cout << "\nAcknowledgement of above frames sent is received by sender\n";
+return 0;
+}
+
+Selective repeat arq:
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include <unistd.h>
+int n, r;
+struct frame
+{
+char ack;
+int data;
+} frm[10];
+int sender(void);
+void recvack(void);
+void resend(void);
+void selective(void);
+int main()
+{
+selective();
+}
+void selective()
+{
+sender();
+recvack();
+resend();
+printf("\nAll packets sent successfully");
+}
+int sender()
+{
+int i;
+printf("\nEnter the no. of packets to be sent:");
+scanf("%d", &n);
+for (i = 1; i <= n; i++)
+{
+printf("\nEnter data for packets[%d]", i);
+scanf("%d", &frm[i].data);
+frm[i].ack = 'y';
+}
+return 0;
+}
+void recvack()
+{
+int i;
+rand();
+r = rand() % n;
+frm[r].ack = 'n';
+for (i = 1; i <= n; i++)
+{
+if (frm[i].ack == 'n')
+printf("\nThe packet number %d is not received\n", r);
+} }
+void resend() // SELECTIVE REPEAT
+{
+printf("\nresending packet %d", r);
+sleep(2);
+frm[r].ack = 'y';
+printf("\nThe received packet is %d", frm[r].data);
+}
+-----------------------------------------------------------------
+
+client to fetch date and time from server:
+server code:
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <time.h>
+#include <unistd.h>
+#define PORT 8888
+#define BUFFER_SIZE 1024 int main() {
+int sockfd, connfd;
+struct sockaddr_in server_addr, client_addr; char buffer[BUFFER_SIZE];
+time_t t = time(NULL);
+struct tm tm = *localtime(&t);
+// create a socket
+if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) == -1) { perror("socket");
+exit(1);
+}
+// bind the socket to the address and port memset(&server_addr, 0, sizeof(server_addr));
+server_addr.sin_family = AF_INET; server_addr.sin_addr.s_addr = INADDR_ANY;
+server_addr.sin_port = htons(PORT);
+if (bind(sockfd, (struct sockaddr *)&server_addr, sizeof(server_addr)) == -1)
+{ perror("bind");
+exit(1);
+}
+// listen for incoming connections if (listen(sockfd, 5) == -1) { perror("listen");
+exit(1);
+}
+printf("listening on port %d...\n", PORT);
+// accept a client connection
+socklen_t client_len = sizeof(client_addr);
+if ((connfd = accept(sockfd, (struct sockaddr *)&client_addr, &client_len)) == -1)
+{ perror("accept");
+exit(1);
+}
+printf("accepted a client connection\n");
+// get the date and time and send it to the client
+char date[20], time[20];
+snprintf(date, sizeof(date), "%d:%d:%d", tm.tm_mday, tm.tm_mon + 1, tm.tm_year +
+1900); snprintf(time, sizeof(time), "%d:%d:%d", tm.tm_hour, tm.tm_min, tm.tm_sec);
+char message[BUFFER_SIZE];
+snprintf(message, sizeof(message), "Date is...%s\nTime is...%s", date, time); if
+(send(connfd, message, strlen(message), 0) == -1) {
+perror("send"); exit(1);
+}
+close(connfd); close(sockfd); return 0;
+}
+
+client code:
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <unistd.h>
+#define SERVER_ADDRESS "127.0.0.1"
+#define PORT 8888
+#define BUFFER_SIZE 1024 int main() {
+int sockfd;
+struct sockaddr_in server_addr; char buffer[BUFFER_SIZE];
+// create a socket
+if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) == -1) { perror("socket");
+exit(1);
+}
+// connect to the server
+memset(&server_addr, 0, sizeof(server_addr)); server_addr.sin_family = AF_INET;
+server_addr.sin_addr.s_addr = inet_addr(SERVER_ADDRESS); server_addr.sin_port =
+htons(PORT);
+if (connect(sockfd, (struct sockaddr *)&server_addr, sizeof(server_addr)) == -1)
+{ perror("connect");
+exit(1);
+}
+printf("connected to server: %s\n", SERVER_ADDRESS);
+// receive the data from the server and print it while (1) {
+int bytes_received = recv(sockfd, buffer, BUFFER_SIZE, 0); if (bytes_received == -1) {
+perror("recv"); exit(1);
+}
+if (bytes_received == 0) {
+printf("Connection closed by server\n"); break;
+}
+buffer[bytes_received] = '\0'; printf("%s\n", buffer);
+}
+close(sockfd); return 0;
+}
+-----------------------------------------------------------------------
+
+validity,class, number of hosts, subnet addresses for given ip:
+#include<stdio.h>
+#include<stdlib.h>
+#include<sys/socket.h>
+#include<netinet/in.h>
+#include<arpa/inet.h>
+int main(int argc, char *argv[]) {
+// Check if the correct number of command line arguments are present
+if (argc != 2) {
+printf("Usage: %s \n", argv[0]);
+return -1;
+}
+// Convert the IP address into binary form
+struct in_addr ip_addr;
+if (inet_pton(AF_INET, argv[1], &ip_addr) <= 0) {
+printf("Invalid IP address\n");
+return -1;
+}
+// Determine the IP address class based on the first octet
+unsigned char first_octet = ((unsigned char*)&ip_addr.s_addr)[0];
+char ip_class;
+if (first_octet < 128) {
+ip_class = 'A';
+} else if (first_octet < 192) {
+ip_class = 'B';
+} else if (first_octet < 224) {
+ip_class = 'C';
+} else if (first_octet < 240) {
+ip_class = 'D';
+} else {
+ip_class = 'E';
+}
+printf("IP Class: %c\n", ip_class);
+// Calculate the number of hosts based on the address class
+int num_hosts;
+switch (ip_class) {
+case 'A':
+num_hosts = (1 << 24) - 2;
+break;
+case 'B':
+num_hosts = (1 << 16) - 2;
+break;
+case 'C':
+num_hosts = (1 << 8) - 2;
+break;
+case 'D':
+case 'E':
+num_hosts = -1;
+break;
+}
+printf("Number of hosts: %d\n", num_hosts);
+// Calculate the subnet mask and network address
+struct in_addr subnet_mask, network_address;
+if (ip_class == 'A') {
+subnet_mask.s_addr = inet_addr("255.0.0.0");
+network_address.s_addr = ip_addr.s_addr & subnet_mask.s_addr;
+} else if (ip_class == 'B') {
+subnet_mask.s_addr = inet_addr("255.255.0.0");
+network_address.s_addr = ip_addr.s_addr & subnet_mask.s_addr;
+} else if (ip_class == 'C') {
+subnet_mask.s_addr = inet_addr("255.255.255.0");
+network_address.s_addr = ip_addr.s_addr & subnet_mask.s_addr;
+}
+printf("Subnet Mask: %s\n", inet_ntoa(subnet_mask));
+printf("Network Address: %s\n", inet_ntoa(network_address));
+return 0;
+}
+-----------------------------------------------------------------
+ip fragmentation
+ip fragment, total length, fragment offset, D and M flag:
+#include <iostream>
+#include <cmath>
+using namespace std;
+int main() {
+int M, X, Y;
+cout << "Enter IP datagram size (in bytes): ";
+cin >> M;
+cout << "Enter MTU for LAN1 (in bytes): ";
+cin >> X;
+cout << "Enter MTU for LAN2 (in bytes): ";
+cin >> Y;
+int frag_size_1 = X - 20; // fragment size for LAN1
+int frag_size_2 = Y - 20 - 8; // fragment size for LAN2
+int num_frags_1 = ceil((double)M / (double)frag_size_1); // number of fragments for
+LAN1
+int last_frag_size_1 = (M % frag_size_1) + 20 + 8; // size of last fragment for LAN1
+int num_frags_2 = ceil((double)last_frag_size_1 / (double)frag_size_2); // number of
+fragments for LAN2
+int last_frag_size_2 = (last_frag_size_1 % frag_size_2) + 20 + 8; // size of last fragment
+for LAN2
+cout << "Number of fragments: " << num_frags_1 + num_frags_2 << endl;
+int offset = 0;
+for (int i = 0; i < num_frags_1; i++) {
+int frag_len = (i == num_frags_1 - 1) ? last_frag_size_1 : frag_size_1;
+int mf = (i == num_frags_1 - 1) ? 0 : 1;
+cout << "Fragment " << i + 1 << " - Total Length: " << frag_len
+<< " | Offset: " << offset << " | D: 0 | M: " << mf << endl;
+offset += frag_len - 20;
+}
+for (int i = 0; i < num_frags_2; i++) {
+int frag_len = (i == num_frags_2 - 1) ? last_frag_size_2 : frag_size_2;
+int mf = (i == num_frags_2 - 1) ? 0 : 1;
+cout << "Fragment " << i + num_frags_1 + 1 << " - Total Length: " << frag_len
+<< " | Offset: " << offset << " | D: 0 | M: " << mf << endl;
+offset += frag_len - 20 - 8;
+}
+return 0;
+}
+-------------------------------------------------------
+count vowels:
+
+server code
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <arpa/inet.h>
+int count_vowels(char *string) {
+int count = 0;
+char vowels[11] = "aeiouAEIOU";
+int i, j;
+for (i = 0; string[i] != '\0'; i++) {
+for (j = 0; vowels[j] != '\0'; j++) {
+if (string[i] == vowels[j]) {
+count++;
+break;
+} } }
+return count;
+}
+int main() {
+int server_socket;
+int client_socket;
+struct sockaddr_in server_address, client_address;
+int client_address_length = sizeof(client_address);
+char buffer[1024];
+// Create socket
+server_socket = socket(AF_INET, SOCK_STREAM, 0);
+if (server_socket == -1) {
+perror("Error: socket creation failed");
+exit(EXIT_FAILURE);
+}
+// Configure server address
+server_address.sin_family = AF_INET;
+server_address.sin_port = htons(12345);
+server_address.sin_addr.s_addr = INADDR_ANY;
+// Bind
+if (bind(server_socket, (struct sockaddr *)&server_address, sizeof(server_address)) ==
+-1) {
+perror("Error: bind failed");
+exit(EXIT_FAILURE);
+}
+// Listen
+if (listen(server_socket, 1) == -1) {
+perror("Error: listen failed");
+exit(EXIT_FAILURE);
+}
+printf("Server listening on localhost:12345...\n");
+while (1) {
+// Accept connection
+client_socket = accept(server_socket, (struct sockaddr *)&client_address, (socklen_t
+*)&client_address_length);
+if (client_socket == -1) {
+perror("Error: accept failed");
+exit(EXIT_FAILURE);
+}
+printf("Connection established from: %s:%d\n", inet_ntoa(client_address.sin_addr),
+ntohs(client_address.sin_port));
+// Receive string from client
+memset(buffer, 0, sizeof(buffer));
+if (recv(client_socket, buffer, sizeof(buffer), 0) == -1) {
+perror("Error: receiving data failed");
+exit(EXIT_FAILURE);
+}
+printf("Received string from client: %s\n", buffer);
+// Count vowels
+int vowel_count = count_vowels(buffer);
+// Send vowel count to client
+char response[10];
+sprintf(response, "%d", vowel_count);
+if (send(client_socket, response, strlen(response), 0) == -1) {
+perror("Error: sending data failed");
+exit(EXIT_FAILURE);
+}
+close(client_socket);
+}
+close(server_socket);
+return 0;
+}
+
+client code:
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+int main() {
+int client_socket;
+struct sockaddr_in server_address;
+char buffer[1024];
+char string[1024];
+// Create socket
+client_socket = socket(AF_INET, SOCK_STREAM, 0);
+if (client_socket == -1) {
+perror("Error: socket creation failed");
+exit(EXIT_FAILURE);
+}
+// Configure server address
+server_address.sin_family = AF_INET;
+server_address.sin_port = htons(12345);
+if (inet_pton(AF_INET, "127.0.0.1", &(server_address.sin_addr)) <= 0) {
+perror("Error: invalid address");
+exit(EXIT_FAILURE);
+}
+// Connect
+if (connect(client_socket, (struct sockaddr *)&server_address, sizeof(server_address))
+== -1) {
+perror("Error: connection failed");
+exit(EXIT_FAILURE);
+}
+printf("Enter a string: ");
+fgets(string, sizeof(string), stdin);
+string[strcspn(string, "\n")] = '\0';
+// Send string to server
+if (send(client_socket, string, strlen(string), 0) == -1) {
+perror("Error: sending data failed");
+exit(EXIT_FAILURE);
+}
+// Receive vowel count from server
+memset(buffer, 0, sizeof(buffer));
+if (recv(client_socket, buffer, sizeof(buffer), 0) == -1) {
+perror("Error: receiving data failed");
+exit(EXIT_FAILURE);
+}
+printf("Number of vowels: %s\n", buffer);
+close(client_socket);
+return 0;
+}
+
+
+------------------------------------------------------------
+Write a socket program to get an IP address in the client process and send it to server
+process. The server has to check the validity of the IP address, Class of IP address,
+Number of hosts in the block. The final result must be displayed in the client proces
+
+server code:
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#define MAX_BUFFER_SIZE 1024
+int main() {
+int client_socket;
+struct sockaddr_in server_addr;
+// Create socket
+client_socket = socket(AF_INET, SOCK_STREAM, 0);
+if (client_socket == -1) {
+perror("Error: Socket creation failed");
+exit(EXIT_FAILURE);
+}
+// Setup server address
+server_addr.sin_family = AF_INET;
+server_addr.sin_port = htons(12345);
+server_addr.sin_addr.s_addr = inet_addr("127.0.0.1"); // Use the appropriate server
+IP address
+// Connect to the server
+if (connect(client_socket, (struct sockaddr *)&server_addr, sizeof(server_addr)) == -1) {
+perror("Error: Connection failed");
+exit(EXIT_FAILURE);
+}
+char ip_address[MAX_BUFFER_SIZE];
+printf("Enter an IP address: ");
+fgets(ip_address, MAX_BUFFER_SIZE, stdin);
+ip_address[strlen(ip_address) - 1] = '\0'; // Remove the newline character
+// Send the IP address to the server
+if (send(client_socket, ip_address, strlen(ip_address), 0) == -1) {
+perror("Error: Sending IP address to server failed");
+exit(EXIT_FAILURE);
+}
+char response[MAX_BUFFER_SIZE];
+// Receive the result from the server
+memset(response, 0, sizeof(response));
+if (recv(client_socket, response, sizeof(response), 0) == -1) {
+perror("Error: Receiving result from server failed");
+exit(EXIT_FAILURE);
+}
+printf("Result: %s\n", response);
+// Close the socket
+close(client_socket);
+return 0;
+}
+
+client code:
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#define MAX_BUFFER_SIZE 1024
+void processIPAddress(int client_socket) {
+char ip_address[MAX_BUFFER_SIZE];
+char response[MAX_BUFFER_SIZE];
+// Receive IP address from client
+memset(ip_address, 0, sizeof(ip_address));
+if (recv(client_socket, ip_address, sizeof(ip_address), 0) == -1) {
+perror("Error: Receiving IP address from client failed");
+exit(EXIT_FAILURE);
+}
+// Validate IP address
+struct sockaddr_in sa;
+int result = inet_pton(AF_INET, ip_address, &(sa.sin_addr));
+if (result != 1) {
+strcpy(response, "Invalid IP address");
+} else {
+// Check Class of IP address
+unsigned long addr = ntohl(sa.sin_addr.s_addr);
+unsigned char firstByte = (addr >> 24) & 0xFF;
+if (firstByte >= 1 && firstByte <= 126) {
+strcpy(response, "Class A IP address");
+// Number of hosts in Class A: 2^(32-8) - 2
+unsigned long numHosts = (1ul << (32 - 8)) - 2;
+sprintf(response + strlen(response), ". Number of hosts: %lu", numHosts);
+} else if (firstByte >= 128 && firstByte <= 191) {
+strcpy(response, "Class B IP address");
+// Number of hosts in Class B: 2^(32-16) - 2
+unsigned long numHosts = (1ul << (32 - 16)) - 2;
+sprintf(response + strlen(response), ". Number of hosts: %lu", numHosts);
+} else if (firstByte >= 192 && firstByte <= 223) {
+strcpy(response, "Class C IP address");
+// Number of hosts in Class C: 2^(32-24) - 2
+unsigned long numHosts = (1ul << (32 - 24)) - 2;
+sprintf(response + strlen(response), ". Number of hosts: %lu", numHosts);
+} else {
+strcpy(response, "Other Class IP address");
+} }
+// Send result back to client
+if (send(client_socket, response, strlen(response), 0) == -1) {
+perror("Error: Sending result to client failed");
+exit(EXIT_FAILURE);
+}
+}
+int main() {
+int server_socket, client_socket;
+struct sockaddr_in server_addr, client_addr;
+socklen_t client_addr_len;
+// Create socket
+server_socket = socket(AF_INET, SOCK_STREAM, 0);
+if (server_socket == -1) {
+perror("Error: Socket creation failed");
+exit(EXIT_FAILURE);
+}
+// Setup server address
+server_addr.sin_family = AF_INET;
+server_addr.sin_port = htons(12345);
+server_addr.sin_addr.s_addr = INADDR_ANY;
+// Bind socket
+if (bind(server_socket, (struct sockaddr *)&server_addr, sizeof(server_addr)) == -1) {
+perror("Error: Bind failed");
+exit(EXIT_FAILURE);
+}
+// Listen for connections
+if (listen(server_socket, 1) == -1) {
+perror("Error: Listen failed");
+exit(EXIT_FAILURE);
+}
+printf("Server is listening on port 12345...\n");
+while (1) {
+// Accept client connection
+client_socket = accept(server_socket, (struct sockaddr *)&client_addr,
+&client_addr_len);
+if (client_socket == -1) {
+perror("Error: Accept failed");
+exit(EXIT_FAILURE);
+}
+printf("Connection established with a client.\n");
+// Process IP address
+processIPAddress(client_socket);
+// Close client socket
+close(client_socket);
+}
+// Close server socket
+close(server_socket);
+return 0;
+}
+----------------------------------------------------------------------------
+
+Split the last four digits of your register number into two half. Store the
+maximum of these two halves in variable A and the other number in variable B. Write a
+socket program to perform required calculator operations (+,-,*,/) in server side on A and
+B. Show the final output of the operation in the client side.(Note: If either A or B is zero,
+consider value of “10” for it)
+
+server code:
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#define PORT 12345
+#define BUFFER_SIZE 1024
+// Function to perform calculator operations
+void calculator_operations(int a, int b, int *addition, int *subtraction, int *multiplication,
+float *division) {
+*addition = a + b;
+*subtraction = a - b;
+*multiplication = a * b;
+*division = (float)a / b;
+}
+int main() {
+int server_socket, client_socket;
+struct sockaddr_in server_address, client_address;
+socklen_t client_address_size;
+char buffer[BUFFER_SIZE];
+// Store the register number
+char register_number[] = "21BCE1997";
+// Extract the last four digits
+char last_four_digits[5];
+strncpy(last_four_digits, register_number + strlen(register_number) - 4, 4);
+last_four_digits[4] = '\0';
+// Split into two halves
+int half1 = atoi(strncpy(buffer, last_four_digits, 2));
+int half2 = atoi(strncpy(buffer, last_four_digits + 2, 2));
+// Store the maximum of the two halves in A and the other number in B
+int A = (half1 > half2) ? half1 : half2;
+int B = (half1 > half2) ? half2 : half1;
+// If either A or B is zero, consider value of 10
+if (A == 0) {
+A = 10;
+}
+if (B == 0) {
+B = 10;
+}
+// Create the socket
+server_socket = socket(AF_INET, SOCK_STREAM, 0);
+if (server_socket == -1) {
+perror("Failed to create socket");
+exit(EXIT_FAILURE);
+}
+// Set server address properties
+server_address.sin_family = AF_INET;
+server_address.sin_port = htons(PORT);
+server_address.sin_addr.s_addr = INADDR_ANY;
+// Bind the socket to the server address
+if (bind(server_socket, (struct sockaddr *)&server_address, sizeof(server_address)) ==
+-1) {
+perror("Failed to bind socket");
+exit(EXIT_FAILURE);
+}
+// Listen for incoming connections
+if (listen(server_socket, 1) == -1) {
+perror("Failed to listen");
+exit(EXIT_FAILURE);
+}
+printf("Server is listening for connections...\n");
+// Accept a client connection
+client_address_size = sizeof(client_address);
+client_socket = accept(server_socket, (struct sockaddr *)&client_address,
+&client_address_size);
+if (client_socket == -1) {
+perror("Failed to accept connection");
+exit(EXIT_FAILURE);
+}
+printf("Client connected.\n");
+// Receive calculation request from the client
+memset(buffer, 0, sizeof(buffer));
+ssize_t bytes_received = recv(client_socket, buffer, sizeof(buffer) - 1, 0);
+if (bytes_received == -1) {
+perror("Failed to receive calculation request");
+exit(EXIT_FAILURE);
+}
+// Process the calculation request
+if (strcmp(buffer, "calculate") == 0) {
+// Perform the calculator operations on A and B
+int addition, subtraction, multiplication;
+float division;
+calculator_operations(A, B, &addition, &subtraction, &multiplication, &division);
+// Prepare the response with the results
+sprintf(buffer,
+"Addition: %d\nSubtraction: %d\nMultiplication: %d\nDivision: %.2f\n",
+addition, subtraction, multiplication, division);
+// Send the response back to the client
+ssize_t bytes_sent = send(client_socket, buffer, strlen(buffer), 0);
+if (bytes_sent == -1) {
+perror("Failed to send calculation result");
+exit(EXIT_FAILURE);
+}
+printf("Calculation result sent to the client.\n");
+}
+// Close the client socket
+close(client_socket);
+// Close the server socket
+close(server_socket);
+return 0;
+}
+
+client code:
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#define SERVER_IP "127.0.0.1"
+#define PORT 12345
+#define BUFFER_SIZE 1024
+int main() {
+int client_socket;
+struct sockaddr_in server_address;
+char buffer[BUFFER_SIZE];
+// Create the socket
+client_socket = socket(AF_INET, SOCK_STREAM, 0);
+if (client_socket == -1) {
+perror("Failed to create socket");
+exit(EXIT_FAILURE);
+}
+// Set server address properties
+server_address.sin_family = AF_INET;
+server_address.sin_port = htons(PORT);
+server_address.sin_addr.s_addr = inet_addr(SERVER_IP);
+// Connect to the server
+if (connect(client_socket, (struct sockaddr *)&server_address, sizeof(server_address))
+== -1) {
+perror("Failed to connect to server");
+exit(EXIT_FAILURE);
+}
+printf("Connected to server.\n");
+// Send calculation request to the server
+const char *request = "calculate";
+ssize_t bytes_sent = send(client_socket, request, strlen(request), 0);
+if (bytes_sent == -1) {
+perror("Failed to send calculation request");
+exit(EXIT_FAILURE);
+}
+// Receive and print the calculation result from the server
+memset(buffer, 0, sizeof(buffer));
+ssize_t bytes_received = recv(client_socket, buffer, sizeof(buffer) - 1, 0);
+if (bytes_received == -1) {
+perror("Failed to receive calculation result");
+exit(EXIT_FAILURE);
+}
+printf("Calculation result from server:\n%s\n", buffer);
+// Close the socket
+close(client_socket);
+return 0;
+}
+----------------------------------------------------------------------------
+CRC:
+
+// Include headers  
+#include<stdio.h>  
+#include<string.h>  
+// length of the generator polynomial  
+#define N strlen(gen_poly)  
+// data to be transmitted and received  
+char data[28];  
+// CRC value  
+char check_value[28];  
+// generator polynomial  
+char gen_poly[10];  
+// variables   
+int data_length,i,j;  
+// function that performs XOR operation  
+void XOR(){  
+    // if both bits are the same, the output is 0  
+    // if the bits are different the output is 1  
+    for(j = 1;j < N; j++)  
+    check_value[j] = (( check_value[j] == gen_poly[j])?'0':'1');  
+      
+}  
+// Function to check for errors on the receiver side  
+void receiver(){  
+// get the received data  
+    printf("Enter the received data: ");  
+    scanf("%s", data);  
+    printf("\n-----------------------------\n");  
+    printf("Data received: %s", data);  
+// Cyclic Redundancy Check  
+    crc();  
+// Check if the remainder is zero to find the error  
+    for(i=0;(i<N-1) && (check_value[i]!='1');i++);  
+        if(i<N-1)  
+            printf("\nError detected\n\n");  
+        else  
+            printf("\nNo error detected\n\n");  
+}  
+  
+void crc(){  
+    // initializing check_value  
+    for(i=0;i<N;i++)  
+        check_value[i]=data[i];  
+    do{  
+    // check if the first bit is 1 and calls XOR function  
+        if(check_value[0]=='1')  
+            XOR();  
+// Move the bits by 1 position for the next computation  
+        for(j=0;j<N-1;j++)  
+            check_value[j]=check_value[j+1];  
+        // appending a bit from data  
+        check_value[j]=data[i++];  
+    }while(i<=data_length+N-1);  
+// loop until the data ends  
+}  
+  
+int main()  
+{  
+    // get the data to be transmitted  
+    printf("\nEnter data to be transmitted: ");  
+    scanf("%s",data);  
+    printf("\n Enter the Generating polynomial: ");  
+    // get the generator polynomial  
+    scanf("%s",gen_poly);  
+    // find the length of data  
+    data_length=strlen(data);  
+    // appending n-1 zeros to the data  
+    for(i=data_length;i<data_length+N-1;i++)  
+        data[i]='0';  
+    printf("\n----------------------------------------");  
+// print the data with padded zeros  
+    printf("\n Data padded with n-1 zeros : %s",data);  
+    printf("\n----------------------------------------");  
+// Cyclic Redundancy Check  
+    crc();  
+// print the computed check value  
+    printf("\nCRC or Check value is : %s",check_value);  
+// Append data with check_value(CRC)    
+    for(i=data_length;i<data_length+N-1;i++)  
+        data[i]=check_value[i-data_length];  
+    printf("\n----------------------------------------");  
+// printing the final data to be sent  
+    printf("\n Final data to be sent : %s",data);  
+    printf("\n----------------------------------------\n");  
+// Calling the receiver function to check errors  
+    receiver();  
+        return 0;  
+}  
+
+-----------------------------
+congestion control:
+additive increase multiplicative decrease
+
+#include <stdio.h>
+#include <unistd.h>
+typedef struct {
+ int cwnd; // Congestion window size
+} CongestionControl;
+void initCongestionControl(CongestionControl* cc) {
+ cc->cwnd = 1;
+}
+void simulateTransmission() {
+ // Simulate transmission by waiting
+ // for a fixed amount of time
+ // You can replace this with your own logic
+ sleep(1);
+}
+ void sendData(CongestionControl* cc,int MAX_WINDOW_SIZE) {
+ int threshold = MAX_WINDOW_SIZE/2;
+ while (cc->cwnd <= threshold) {
+ printf("Transmitting packet %d\n",cc->cwnd);
+ for (int i = 0; i < cc->cwnd; i++) {
+ simulateTransmission();
+ }
+ // Update congestion window size
+ cc->cwnd += 1; // Additive increase
+ }
+}
+ int main() {
+printf("Enter the maximum window size\n");
+int s;
+scanf("%d",&s);
+ CongestionControl cc;
+ initCongestionControl(&cc);
+ sendData(&cc,s);
+ return 0;
+}
+
+slow start
+
+#include <stdio.h>
+#define INITIAL_WINDOW_SIZE 1
+#define MAX_WINDOW_SIZE 32
+void slowStart() {
+ int congestionWindow = INITIAL_WINDOW_SIZE;
+ int threshold = MAX_WINDOW_SIZE/2;
+ while (congestionWindow <= threshold) {
+ printf("Congestion window size: %d\n", congestionWindow);
+ // Send packets equal to the congestion window size
+ for(int i = 1; i <= congestionWindow; i++)
+ {
+ printf("Received acknowledgement for data packet : %d\n", i);
+ }
+ // Simulate ACKs received for sent packets
+ // Increase the congestion window size exponentially
+ congestionWindow *= 2;
+ }
+}
+int main() {
+ printf("Slow Start Congestion Control Algorithm\n");
+ slowStart();
+ return 0;
+}
+
+congestion avoidance
+
+#include <stdio.h>
+#define INITIAL_WINDOW_SIZE 1
+#define MAX_WINDOW_SIZE 32
+#define SLOW_START_THRESHOLD 16
+void congestionAvoidance() {
+ int congestionWindow = INITIAL_WINDOW_SIZE;
+ int threshold = MAX_WINDOW_SIZE;
+ int transmittedPackets = 0;
+ int transmittingPackets = 0;
+ while (congestionWindow <= threshold) {
+ printf("Congestion window size: %d\n", congestionWindow);
+ transmittedPackets = congestionWindow;
+ transmittingPackets = 0;
+ // Simulate receiving ACKs for sent packets
+ int receivedAcks = 0;
+ while (receivedAcks < transmittingPackets) {
+ // Receive ACK
+ receivedAcks++;
+ printf("Received ACK for packet %d\n", receivedAcks);
+ }
+ // Adjust congestion window based on congestion control
+ if (receivedAcks == transmittingPackets) {
+ // All packets were acknowledged
+ if (congestionWindow < SLOW_START_THRESHOLD) {
+ // Congestion window grows exponentially during slow start
+ congestionWindow *= 2;
+ } else {
+ // Congestion window grows linearly during congestion avoidance
+ congestionWindow += 1;
+ }
+ } else {
+ // Congestion detected, reduce congestion window
+ threshold = congestionWindow / 2;
+ congestionWindow = threshold;
+ printf("Congestion detected, reducing window size\n");
+ break;
+ }
+ }
+ }
+int main() {
+ printf("Congestion Avoidance Algorithm\n");
+ congestionAvoidance();
+ return 0;
+}
+--------------------------------------------------------------------------
+
+TCP chat
+
+server:
+#include <stdio.h>
+#include <netdb.h>
+#include <netinet/in.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <unistd.h> 
+#define MAX 80
+#define PORT 8080
+#define SA struct sockaddr
+ 
+void func(int connfd)
+{
+ char buff[MAX];
+ int n;
+ 
+ for (;;) {
+ bzero(buff, MAX);
+ 
+ 
+ read(connfd, buff, sizeof(buff));
+ 
+ printf("From client: %s\t To client : ", buff);
+ bzero(buff, MAX);
+ n = 0;
+ 
+ while ((buff[n++] = getchar()) != '\n') ;
+ write(connfd, buff, sizeof(buff));
+ if (strncmp("exit", buff, 4) == 0) {
+ printf("Server Exit...\n");
+ break;
+ }
+ }
+}
+ 
+int main()
+{
+ int sockfd, connfd, len;
+ struct sockaddr_in servaddr, cli;
+ 
+ 
+ sockfd = socket(AF_INET, SOCK_STREAM, 0);
+ if (sockfd == -1) {
+ printf("socket creation failed...\n");
+ exit(0);
+ }
+ else
+ printf("Socket successfully created..\n");
+ bzero(&servaddr, sizeof(servaddr));
+ 
+ 
+ servaddr.sin_family = AF_INET;
+ servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
+ servaddr.sin_port = htons(PORT);
+ 
+ 
+ if ((bind(sockfd, (SA*)&servaddr, sizeof(servaddr))) != 0) {
+ printf("socket bind failed...\n");
+ exit(0);
+ }
+ else
+ printf("Socket successfully binded..\n");
+ 
+ if ((listen(sockfd, 5)) != 0) {
+ printf("Listen failed...\n");
+ exit(0);
+ }
+ else
+ printf("Server listening..\n");
+ len = sizeof(cli);
+ 
+ 
+ connfd = accept(sockfd, (SA*)&cli, &len);
+ if (connfd < 0) {
+ printf("server accept failed...\n");
+ exit(0);
+ }
+ else
+ printf("server accept the client...\n");
+ 
+ 
+ func(connfd);
+ close(sockfd);
+}
+
+client:
+#include <arpa/inet.h> 
+#include <netdb.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <strings.h> 
+#include <sys/socket.h>
+#include <unistd.h> 
+#define MAX 80
+#define PORT 8080
+#define SA struct sockaddr
+void func(int sockfd)
+{
+ char buff[MAX];
+ int n;
+ for (;;) {
+ bzero(buff, sizeof(buff));
+ printf("Enter the string : ");
+ n = 0;
+ while ((buff[n++] = getchar()) != '\n')
+ ;
+ write(sockfd, buff, sizeof(buff));
+ bzero(buff, sizeof(buff));
+ read(sockfd, buff, sizeof(buff));
+ printf("From Server : %s", buff);
+ if ((strncmp(buff, "exit", 4)) == 0) {
+ printf("Client Exit...\n");
+ break;
+ }
+ }
+}
+int main()
+{
+ int sockfd, connfd;
+ struct sockaddr_in servaddr, cli;
+ 
+ sockfd = socket(AF_INET, SOCK_STREAM, 0);
+ if (sockfd == -1) {
+ printf("socket creation failed...\n");
+ exit(0);
+ }
+ else
+ printf("Socket successfully created..\n");
+ bzero(&servaddr, sizeof(servaddr));
+ 
+ servaddr.sin_family = AF_INET;
+ servaddr.sin_addr.s_addr = inet_addr("127.0.0.1");
+ servaddr.sin_port = htons(PORT);
+ 
+ if (connect(sockfd, (SA*)&servaddr, sizeof(servaddr))
+ != 0) {
+ printf("connection with the server failed...\n");
+ exit(0);
+ }
+ else
+ printf("connected to the server..\n");
+ 
+ func(sockfd);
+ 
+ close(sockfd);
+}
+----------------------------------------------------
+echo chat:
+
+server:
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/types.h> 
+#include <sys/socket.h>
+#include <netinet/in.h>
+#define PORT 7
+#define BUFSIZE 1024
+/* 
+ * error - wrapper for perror
+ */
+void error(char *msg) {
+ perror(msg);
+ exit(1);
+}
+int main(int argc, char **argv) {
+ int sockfd, newsockfd, portno;
+ socklen_t clilen;
+ char buf[BUFSIZE];
+ struct sockaddr_in serv_addr, cli_addr;
+ int n;
+ /* check command line arguments */
+ if (argc < 2) {
+ fprintf(stderr,"ERROR, no port provided\n");
+ exit(1);
+ }
+ /* socket: create the socket */
+ sockfd = socket(AF_INET, SOCK_STREAM, 0);
+ if (sockfd < 0) 
+ error("ERROR opening socket");
+ /* build the server's Internet address */
+ bzero((char *) &serv_addr, sizeof(serv_addr));
+ portno = atoi(argv[1]);
+ serv_addr.sin_family = AF_INET;
+ serv_addr.sin_addr.s_addr = INADDR_ANY;
+ serv_addr.sin_port = htons(portno);
+ /* bind: associate the socket with a port */
+ if (bind(sockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0) 
+ error("ERROR on binding");
+ /* listen: make it ready to accept connections */
+ listen(sockfd, 5);
+ /* main loop: wait for a connection request, echo input line, then close connection */
+ clilen = sizeof(cli_addr);
+ while (1) {
+ /* accept: wait for a connection request */
+ newsockfd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
+ if (newsockfd < 0) 
+ error("ERROR on accept");
+ /* read: receive a message from the client */
+ bzero(buf, BUFSIZE);
+ n = read(newsockfd, buf, BUFSIZE-1);
+ if (n < 0) 
+ error("ERROR reading from socket");
+ /* write: send the same message back to the client */
+ n = write(newsockfd, buf, strlen(buf));
+ if (n < 0) 
+ error("ERROR writing to socket");
+ /* close: close the connection */
+ close(newsockfd);
+ }
+ /* close: close the original socket */
+ close(sockfd);
+ return 0; 
+}
+
+client:
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <netdb.h> 
+#define BUFSIZE 1024
+/* 
+ * error - wrapper for perror
+ */
+void error(char *msg) {
+ perror(msg);
+ exit(0);
+}
+int main(int argc, char **argv) {
+ int sockfd, portno, n;
+ struct sockaddr_in serveraddr;
+ struct hostent *server;
+ char *hostname;
+ char buf[BUFSIZE];
+ /* check command line arguments */
+ if (argc != 3) {
+ fprintf(stderr,"usage: %s <hostname> <port>\n", argv[0]);
+ exit(0);
+ }
+ hostname = argv[1];
+ portno = atoi(argv[2]);
+ /* socket: create the socket */
+ sockfd = socket(AF_INET, SOCK_STREAM, 0);
+ if (sockfd < 0) 
+ error("ERROR opening socket");
+ /* gethostbyname: get the server's DNS entry */
+ server = gethostbyname(hostname);
+ if (server == NULL) {
+ fprintf(stderr,"ERROR, no such host as %s\n", hostname);
+ exit(0);
+ }
+ /* build the server's Internet address */
+ bzero((char *) &serveraddr, sizeof(serveraddr));
+ serveraddr.sin_family = AF_INET;
+ bcopy((char *)server->h_addr, 
+ (char *)&serveraddr.sin_addr.s_addr, server->h_length);
+ serveraddr.sin_port = htons(portno);
+ /* connect: create a connection with the server */
+ /* connect: create a connection with the server */
+if (connect(sockfd, (struct sockaddr*)&serveraddr, sizeof(serveraddr)) < 0) 
+ error("ERROR connecting");
+ /* get message line from the user */
+ printf("Please enter msg: ");
+ bzero(buf, BUFSIZE);
+ fgets(buf, BUFSIZE, stdin);
+ /* write: send the message line to the server */
+ n = write(sockfd, buf, strlen(buf));
+ if (n < 0) 
+ error("ERROR writing to socket");
+ /* read: print the server's reply */
+ bzero(buf, BUFSIZE);
+ n = read(sockfd, buf, BUFSIZE);
+ if (n < 0) 
+ error("ERROR reading from socket");
+ printf("Echo from server: %s", buf);
+ close(sockfd);
+ return 0;
+}
+------------------------------------------------------------
